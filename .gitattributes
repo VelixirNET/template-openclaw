@@ -1,0 +1,4 @@
+# Built and run on Linux. Keep every file LF on checkout, including on Windows with
+# core.autocrlf=true: `velixir deploy` ships the working copy as-is, and a Procfile or
+# shebang that picked up a stray carriage return fails to start.
+* text=auto eol=lf

@@ -1,0 +1,22 @@
+{
+  "name": "velixir-openclaw",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An OpenClaw sandbox, ready to deploy on velixir.",
+  "scripts": {
+    "start": "node start.js"
+  },
+  "engines": {
+    "node": ">=24.16.0 <25 || >=26.1.0"
+  },
+  "dependencies": {
+    "openclaw": "2026.9.6"
+  },
+  "allowScripts": {
+    "openclaw": true,
+    "koffi": false,
+    "protobufjs": false,
+    "@google/genai": false
+  },
+  "license": "MIT"
+}

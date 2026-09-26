@@ -1,0 +1,22 @@
+# Build settings for velixir's builder (Nixpacks).
+#
+# OpenClaw needs Node 24.16 or newer on the 24 line, and a Node whose built-in SQLite is 3.51.3 or
+# newer (it refuses older ones as unsafe for its write-ahead log). Nixpacks' own Node 24 is older
+# than both, so the packages below come from a pinned nixpkgs snapshot (the nixos-unstable channel
+# of 2026-09-25: Node 24.20.0 built against SQLite 3.53.3). Bump the commit to move to newer ones.
+#
+# ripgrep and fd are there for the agent: OpenClaw uses them for fast file search and would
+# otherwise download its own copies on every start, because the disk is empty on every start.
+#
+# Listing the packages replaces what the builder would detect rather than adding to it. aptPkgs is
+# empty on purpose: there is no browser in this image (see the README).
+[phases.setup]
+nixPkgs = ["nodejs_24", "ripgrep", "fd"]
+nixpkgsArchive = "e94cb152ed51bd6e24eb4a41f1460252beb52cd2"
+aptPkgs = []
+
+# Straight to node rather than `npm run start`: npm and a shell in between do not pass SIGTERM on,
+# so the gateway would be killed instead of closing cleanly on every redeploy. start.js forwards
+# the signal to it.
+[start]
+cmd = "node start.js"
