@@ -146,13 +146,16 @@ function readOpenClawVersion() {
 // ─── OpenClaw's config, rebuilt on every boot ───────────────────────────────
 
 // The state directory is OpenClaw's whole memory: config, SQLite databases, workspace, paired
-// devices, channel approvals. It lives on the container disk, so it is gone after a restart
-// anyway; clearing it at boot makes a local `docker restart` behave the same way. It sits in this
-// app's own folder rather than OpenClaw's usual ~/.openclaw, so running the template on a machine
-// where you also use OpenClaw never touches your own. A directory you point OPENCLAW_STATE_DIR at
-// yourself is never cleared.
+// devices, channel approvals. With a velixir volume (VELIXIR_VOLUME_PATH) it lives there and
+// survives restarts. Without one it sits on the container disk, so it is gone after a restart
+// anyway, and clearing it at boot makes a local `docker restart` behave the same way; it is in
+// this app's own folder rather than OpenClaw's usual ~/.openclaw, so running the template on a
+// machine where you also use OpenClaw never touches your own. A directory you point
+// OPENCLAW_STATE_DIR at yourself, or the volume, is never cleared.
 const stateDirFromEnv = env('OPENCLAW_STATE_DIR');
-const stateDir = stateDirFromEnv || path.join(__dirname, '.openclaw');
+const volumePath = env('VELIXIR_VOLUME_PATH');
+const stateDir = stateDirFromEnv || (volumePath ? path.join(volumePath, 'openclaw') : path.join(__dirname, '.openclaw'));
+const persistentState = Boolean(stateDirFromEnv || volumePath);
 const configPath = path.join(stateDir, 'openclaw.json');
 
 function buildConfig() {
@@ -224,7 +227,7 @@ function deepMerge(target, source) {
 }
 
 function writeConfig() {
-  if (!stateDirFromEnv) fs.rmSync(stateDir, { recursive: true, force: true });
+  if (!persistentState) fs.rmSync(stateDir, { recursive: true, force: true });
   fs.mkdirSync(stateDir, { recursive: true, mode: 0o700 });
   fs.writeFileSync(configPath, `${JSON.stringify(buildConfig(), null, 2)}\n`, { mode: 0o600 });
 }
@@ -293,8 +296,12 @@ ${refresh ? `<meta http-equiv="refresh" content="${refresh}">` : ''}
 </html>`;
 }
 
-const SANDBOX_NOTE = `<p class="note">This is a sandbox: chats, memory, the workspace, paired browsers and Telegram
-  approvals are wiped whenever the app restarts or redeploys. Settings come back from the environment variables.</p>`;
+const SANDBOX_NOTE = persistentState
+  ? `<p class="note">Chats, memory, the workspace, paired browsers and Telegram approvals are kept on this app's
+  volume, so they survive restarts and redeploys. Settings come back from the environment variables.</p>`
+  : `<p class="note">This is a sandbox: chats, memory, the workspace, paired browsers and Telegram approvals are wiped
+  whenever the app restarts or redeploys. Add a volume on the app's Volume tab to keep them. Settings come back from
+  the environment variables.</p>`;
 
 function setupPage() {
   const items = problems.map((p) => `<li><code>${escapeHtml(p.name)}</code>: ${escapeHtml(p.fix)}</li>`).join('');

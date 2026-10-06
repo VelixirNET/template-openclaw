@@ -2,9 +2,10 @@
 
 [![Deploy on velixir](https://velixir.net/img/deploy-on-velixir.svg)](https://velixir.net/new?template=openclaw)
 
-> **This is a sandbox.** Its workspace, memory, chats, paired browsers and Telegram approvals are
-> wiped whenever the app restarts or redeploys. Its settings come back from your environment
-> variables, so it always starts configured, just empty.
+> **It remembers, with its volume.** Deploying it adds a persistent volume, so its workspace,
+> memory, chats, paired browsers and Telegram approvals survive restarts and redeploys. Without a
+> volume it is a sandbox that starts empty on every restart. Either way its settings come back from
+> your environment variables, so it always starts configured.
 
 [OpenClaw](https://openclaw.ai) (formerly Clawdbot) is an open-source AI assistant: a web Control
 UI to chat with it, chat channels such as Telegram, and tools that let it act on its own machine,
@@ -14,12 +15,11 @@ This template is the quickest way to try it on your own model and your own Teleg
 API key, deploy, and you are chatting with it in a few minutes, with nothing to install and no
 server to look after. [Deploy it on velixir](https://velixir.net/new?template=openclaw).
 
-**Good for:** trying OpenClaw before you commit to running it, experiments with agents and
-tools, and disposable tasks (research, a script, a file conversion) where nothing needs to
-survive.
+**Good for:** a personal assistant that keeps its memory and files on the app's volume, and,
+with the volume unticked, experiments and disposable tasks where nothing needs to survive.
 
-**Not for:** a long-term assistant that remembers you, your files and your preferences. Anything
-it learns or writes is gone after the next restart.
+The volume is where `OPENCLAW_STATE_DIR` points (through `VELIXIR_VOLUME_PATH`). It is snapshotted
+daily, and snapshots can be restored from the app's Volume tab.
 
 ## What you get
 
@@ -68,9 +68,8 @@ your model account.
 
 If you set `OPENCLAW_GATEWAY_TOKEN`, that is the token. If you do not, the app generates a strong
 random one when it starts and prints it once to the app's log, in a box that begins
-**OpenClaw is ready**. That token changes on every restart. A sandbox has nowhere to keep a secret
-between restarts (no database, and the disk is wiped), so a generated token cannot outlive one;
-set the variable to keep the same token across restarts. Changing it later redeploys the app with
+**OpenClaw is ready**. That token changes on every restart, volume or not, so set the variable to
+keep the same token across restarts. Changing it later redeploys the app with
 the new one.
 
 ## Connecting your browser
@@ -116,9 +115,11 @@ install them, but an install lasts only until the next restart in this sandbox.
 
 ## Things to know
 
-**Everything resets on a restart or redeploy.** Chats, memory, the workspace and any files the
-agent made, paired browsers, Telegram approvals, installed plugins and settings changed in the
-Control UI are all wiped. What comes back is what the environment variables say. To keep a setting,
+**Without a volume, everything resets on a restart or redeploy.** Chats, memory, the workspace and
+any files the agent made, paired browsers, Telegram approvals, installed plugins and settings
+changed in the Control UI are all wiped, and what comes back is what the environment variables say.
+With the volume they are kept, though the config file itself is still rebuilt from the environment
+on every start. To keep a setting,
 put it in `OPENCLAW_CONFIG_JSON`: it is merged into OpenClaw's config on every start, except that
 it cannot switch off the token, the loopback-only listener or the proxy settings.
 

@@ -1,12 +1,13 @@
 {
   "name": "OpenClaw",
-  "tagline": "An AI sandbox: try the OpenClaw assistant on your own model and Telegram bot in minutes. It starts fresh on every restart.",
-  "description": "OpenClaw (formerly Clawdbot) is an open-source AI assistant with a web Control UI, chat channels and tools that act on its own machine. This template runs it as a sandbox: the quickest way to try it on your own model key and Telegram bot, for experiments and throwaway tasks. Its workspace, memory, chats, paired browsers and Telegram approvals are wiped whenever the app restarts or redeploys. Its settings come back from your environment variables, so it always starts configured, but it will not remember you between restarts, so it is not the place for a long-term assistant. Set an Anthropic, OpenAI, Gemini, OpenRouter or xAI key, open the app and enter the gateway token to connect your browser as the owner. It stays locked: the gateway requires its token, every browser has to be paired, and strangers who find your Telegram bot get nowhere without your approval. The agent's shell commands run inside the app's own container. Needs an always-on plan with 2 GB of memory. You bring the model key, and the provider bills the tokens.",
+  "tagline": "The OpenClaw assistant on your own model and Telegram bot in minutes, with a volume so it remembers you across restarts.",
+  "description": "OpenClaw (formerly Clawdbot) is an open-source AI assistant with a web Control UI, chat channels and tools that act on its own machine. Deploying it adds a persistent volume, so its workspace, memory, chats, paired browsers and Telegram approvals survive restarts and redeploys. Untick the volume and it runs as a sandbox that starts fresh on every restart, for experiments and throwaway tasks. Either way its settings come back from your environment variables, so it always starts configured. Set an Anthropic, OpenAI, Gemini, OpenRouter or xAI key, open the app and enter the gateway token to connect your browser as the owner. It stays locked: the gateway requires its token, every browser has to be paired, and strangers who find your Telegram bot get nowhere without your approval. The agent's shell commands run inside the app's own container. Needs an always-on plan with 2 GB of memory. You bring the model key, and the provider bills the tokens.",
   "language": "Node",
   "runtimeVersion": "24",
   "accent": "#EF4444",
   "tags": ["AI sandbox", "Personal assistant", "Telegram"],
   "topics": ["openclaw", "ai-agent", "ai-assistant", "ai-sandbox", "telegram-bot", "nodejs"],
   "minMemoryMb": 2048,
-  "alwaysOn": true
+  "alwaysOn": true,
+  "volume": { "mountPath": "/data", "limitGb": 10 }
 }
